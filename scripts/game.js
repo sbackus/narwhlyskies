@@ -30,6 +30,8 @@ var game_time = 0;
 var player = null;
 var obstacles = []
 var midBackgrounds = []
+var powerUps = []
+var lasers = [];
 
 var gameContext = document.getElementById("gameCanvas").getContext("2d");
 var farBackgroundContext = document.getElementById("gameCanvas").getContext("2d");
@@ -60,6 +62,27 @@ $(document).keyup(function(e){
 	delete keys[e.keyCode ? e.keyCode : e.which];
 });
 
+function getMousePos(canvas, evt) {
+        var rect = canvas.getBoundingClientRect();
+        return {
+          x: evt.clientX - rect.left,
+          y: evt.clientY - rect.top
+        };
+      }
+var canvas = document.getElementById('gameCanvas');
+
+canvas.addEventListener('click', function(evt) {
+	var mousePos = getMousePos(canvas, evt);
+	var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
+	if(player.power_ups >= 1){
+		player.x = mousePos.x;
+		player.y = mousePos.y;
+		player.power_ups--;
+		var audio = new Audio('sounds/teleport.wav');
+		audio.play()
+	}
+}, false);
+
 
 function init(){
 	player = new Player();
@@ -71,14 +94,22 @@ function init(){
 
 function update(){
 	game_time++;
-	console.log(game_time);
 
-	if(game_time>=game_duration){
+	if(keys[key.space]&&lasers.length<1&&player.power_ups>=1) {
+		lasers = lasers.concat(new Laser(player.x,player.y));
+		player.power_ups--;
+	}
+
+	if(player.power_ups >= 10){
 		game_won = true
 	}
 
 	if (Math.random()<=obstacle_spawn_rate){
 		obstacles = obstacles.concat(new Obstacle());
+	}
+
+	if (Math.random()<=0.0005){
+		powerUps = powerUps.concat(new PowerUp());
 	}
 
 	if (obstacle_spawn_rate <= 0.005){
@@ -87,6 +118,20 @@ function update(){
 
 	obstacles.forEach(function(obstacle) {
 	    obstacle.update();
+
+	    lasers.forEach(function(laser){
+			if(collision(laser,obstacle)){
+				obstacle.destroyed = true
+			}
+		});
+	});
+
+	lasers.forEach(function(laser){
+		laser.update();
+	});
+
+	powerUps.forEach(function(powerUp) {
+	    powerUp.update();
 	});
 
 	if (Math.random()<=0.0005){
@@ -99,10 +144,20 @@ function update(){
 	farBackground.update();
 
 	player.update();
+
+
+	//delete references to offscreen objects
+	[powerUps,lasers,obstacles].forEach(function(list){  
+		for (i = 0; i < list.length; ++i) {
+		    if (list[i].cleanup()) {
+		        list.splice(i--, 1);
+		    }
+		};
+	});
 }
 
 function render(){
-
+	// DONT'T DRAW THINGS HERE OR THEY'LL GET DRAWN BEHIND THE BACKGROUND!
 	farBackground.draw();
 	midBackgrounds.forEach(function(midBackground) {
 	    midBackground.draw();
@@ -110,7 +165,20 @@ function render(){
 	obstacles.forEach(function(obstacle) {
 	    obstacle.draw();
 	});
+	powerUps.forEach(function(powerUp) {
+	    powerUp.draw();
+	});
+
+	lasers.forEach(function(laser){
+		laser.draw();
+	});
 	player.draw();
+	for (i = 0; i < player.power_ups; i++) { 
+		gameContext.drawImage(images[13],i*80,0);
+	}
+	for (i = 0; i < player.health-1; i++) { 
+		gameContext.drawImage(images[12],i*45,height-images[12].height);
+	}
 }
 
 
@@ -136,6 +204,8 @@ function show_winning_screen(){
 			farBackgroundContext.font = "bold 50px monaco";
 			farBackgroundContext.fillStyle = "black";
 			farBackgroundContext.fillText("You Win!",width/2-100,height/2);
+			var audio = new Audio('sounds/win.wav');
+			audio.play()
 		});
 };
 
@@ -156,6 +226,6 @@ farBackgroundContext.font = "bold 50px monaco";
 farBackgroundContext.fillStyle = "black";
 farBackgroundContext.fillText("loading",width/2-100,height/2);
 
-loadImages(["images/sprite100px.png","images/bkgd_strip1.png","images/floatcity500px.png","images/monster_150px.png","images/monster_200px.png","images/monster1_200px.png","images/monster1_125px.png"]);
+loadImages(["images/sprite100px.png","images/bkgd_strip1.png","images/floatcity500px.png","images/monster_150px.png","images/monster_200px.png","images/monster1_200px.png","images/monster1_125px.png","images/sprintmoving.png","images/sprintmoving10d.png","images/loot_100px.png","images/bkgd_strip2.png","images/bkgd_strip3.png","images/sprite50px.png","images/loot_50px.png"]);
 
 checkImages();
