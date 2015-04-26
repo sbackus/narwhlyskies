@@ -5,7 +5,7 @@ function FarBackground() {
 	this.width = this.image.width;
 	this.x = 0;
 	this.y = 0;
-	this.speed = 0.05;
+	this.speed = 0.07;
 	this.draw =  function(){
 		farBackgroundContext.drawImage(this.image,this.x,this.y);
 	};

@@ -1,7 +1,7 @@
 
 function Player() {
 	this.image = images[0];
-	this.height = this.image.height;
+	this.height = this.image.height-5;
 	this.width = this.image.width;
 	this.health = 3;
 	this.x = 30;

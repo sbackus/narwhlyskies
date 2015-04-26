@@ -29,6 +29,7 @@ var game_duration = 6000;
 var game_time = 0;
 var player = null;
 var obstacles = []
+var midBackgrounds = []
 
 var gameContext = document.getElementById("gameCanvas").getContext("2d");
 var farBackgroundContext = document.getElementById("gameCanvas").getContext("2d");
@@ -63,7 +64,7 @@ $(document).keyup(function(e){
 function init(){
 	player = new Player();
 	farBackground = new FarBackground();
-	midBackground = new MidBackground();
+	midBackgrounds = midBackgrounds.concat(new MidBackground());
 	loop();
 	// DON'T PUT ANYTHING AFTER THE GAME LOOP STARTS!
 }
@@ -88,15 +89,24 @@ function update(){
 	    obstacle.update();
 	});
 
+	if (Math.random()<=0.0005){
+		midBackgrounds = midBackgrounds.concat(new MidBackground());
+	}
+	midBackgrounds.forEach(function(midBackground) {
+	    midBackground.update();
+	});
+
 	farBackground.update();
-	midBackground.update();
+
 	player.update();
 }
 
 function render(){
 
 	farBackground.draw();
-	midBackground.draw();
+	midBackgrounds.forEach(function(midBackground) {
+	    midBackground.draw();
+	});
 	obstacles.forEach(function(obstacle) {
 	    obstacle.draw();
 	});
@@ -146,6 +156,6 @@ farBackgroundContext.font = "bold 50px monaco";
 farBackgroundContext.fillStyle = "black";
 farBackgroundContext.fillText("loading",width/2-100,height/2);
 
-loadImages(["images/sprite100px.png","images/bkgd_strip1.png","images/floatcity500px.png","images/floatcity125px.png"]);
+loadImages(["images/sprite100px.png","images/bkgd_strip1.png","images/floatcity500px.png","images/monster_150px.png","images/monster_200px.png","images/monster1_200px.png","images/monster1_125px.png"]);
 
 checkImages();

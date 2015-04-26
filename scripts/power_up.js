@@ -1,9 +1,8 @@
 
-function Obstacle() {
-	this.image = randomChoice([images[3],images[4],images[5],images[6]]);
+function PowerUp() {
+	this.image = images[3];
 	this.height = this.image.height;
 	this.width = this.image.width;
-	this.health = 20;
 	this.x = width;
 	this.y = Math.random() * (height-this.height);
 	this.speed = randomChoice([2,3,4]);
