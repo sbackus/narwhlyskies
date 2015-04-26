@@ -6,6 +6,9 @@ function MidBackground() {
 	this.x = width;
 	this.y = 30;
 	this.speed = 0.8;
+	this.cleanup = function(){
+		return this.x< 0-this.width
+	};
 	this.draw =  function(){
 		farBackgroundContext.drawImage(this.image,this.x,this.y);
 	};

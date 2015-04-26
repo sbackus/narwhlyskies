@@ -6,6 +6,9 @@ function FarBackground() {
 	this.x = 0;
 	this.y = 0;
 	this.speed = 0.1;
+	this.cleanup = function(){
+		return this.x< 0-this.width
+	};
 	this.draw =  function(){
 		farBackgroundContext.drawImage(this.image,this.x,this.y);
 	};

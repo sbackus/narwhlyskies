@@ -28,9 +28,10 @@ var game_won = false;
 var game_duration = 6000;
 var game_time = 0;
 var player = null;
-var obstacles = []
-var midBackgrounds = []
-var powerUps = []
+var obstacles = [];
+var midBackgrounds = [];
+var farBackgrounds = [];
+var powerUps = [];
 var lasers = [];
 
 var gameContext = document.getElementById("gameCanvas").getContext("2d");
@@ -86,7 +87,7 @@ canvas.addEventListener('click', function(evt) {
 
 function init(){
 	player = new Player();
-	farBackground = new FarBackground();
+	farBackgrounds = farBackgrounds.concat(new FarBackground());
 	midBackgrounds = midBackgrounds.concat(new MidBackground());
 	loop();
 	// DON'T PUT ANYTHING AFTER THE GAME LOOP STARTS!
@@ -141,13 +142,20 @@ function update(){
 	    midBackground.update();
 	});
 
-	farBackground.update();
+	farBackgrounds.forEach(function(farBackground) {
+	    farBackground.update();
+	    if (farBackground.x+farBackground.width<width && farBackgrounds.length<=1){
+	    	fb = new FarBackground()
+	    	fb.x = width
+	    	farBackgrounds = farBackgrounds.concat(fb)
+	    }
+	});
 
 	player.update();
 
 
 	//delete references to offscreen objects
-	[powerUps,lasers,obstacles].forEach(function(list){  
+	[powerUps,lasers,obstacles, midBackgrounds, farBackgrounds].forEach(function(list){  
 		for (i = 0; i < list.length; ++i) {
 		    if (list[i].cleanup()) {
 		        list.splice(i--, 1);
@@ -158,10 +166,14 @@ function update(){
 
 function render(){
 	// DONT'T DRAW THINGS HERE OR THEY'LL GET DRAWN BEHIND THE BACKGROUND!
-	farBackground.draw();
+	farBackgrounds.forEach(function(farBackground) {
+	    farBackground.draw();
+	});
+
 	midBackgrounds.forEach(function(midBackground) {
 	    midBackground.draw();
 	});
+
 	obstacles.forEach(function(obstacle) {
 	    obstacle.draw();
 	});
@@ -174,7 +186,7 @@ function render(){
 	});
 	player.draw();
 	for (i = 0; i < player.power_ups; i++) { 
-		gameContext.drawImage(images[13],i*80,0);
+		gameContext.drawImage(images[13],i*30,0);
 	}
 	for (i = 0; i < player.health-1; i++) { 
 		gameContext.drawImage(images[12],i*45,height-images[12].height);
