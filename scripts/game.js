@@ -33,6 +33,7 @@ var midBackgrounds = [];
 var farBackgrounds = [];
 var powerUps = [];
 var lasers = [];
+var teleports = [];
 
 var gameContext = document.getElementById("gameCanvas").getContext("2d");
 var farBackgroundContext = document.getElementById("gameCanvas").getContext("2d");
@@ -76,6 +77,7 @@ canvas.addEventListener('click', function(evt) {
 	var mousePos = getMousePos(canvas, evt);
 	var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
 	if(player.power_ups >= 1){
+		teleports = teleports.concat(new Teleport(player.x,player.y));
 		player.x = mousePos.x;
 		player.y = mousePos.y;
 		player.power_ups--;
@@ -98,6 +100,8 @@ function update(){
 
 	if(keys[key.space]&&lasers.length<1&&player.power_ups>=1) {
 		lasers = lasers.concat(new Laser(player.x,player.y));
+		var audio = new Audio('sounds/pewpew.wav');
+		audio.play()
 		player.power_ups--;
 	}
 
@@ -109,13 +113,14 @@ function update(){
 		obstacles = obstacles.concat(new Obstacle());
 	}
 
-	if (Math.random()<=0.0005){
+	if (Math.random()<=0.002){
 		powerUps = powerUps.concat(new PowerUp());
 	}
 
-	if (obstacle_spawn_rate <= 0.005){
-		obstacle_spawn_rate += 0.00006
-	}
+	// if (obstacle_spawn_rate <= 0.005){
+	// 	obstacle_spawn_rate += 0.00006
+	// }
+	obstacle_spawn_rate = 0.002 * player.power_ups
 
 	obstacles.forEach(function(obstacle) {
 	    obstacle.update();
@@ -129,6 +134,9 @@ function update(){
 
 	lasers.forEach(function(laser){
 		laser.update();
+	});
+	teleports.forEach(function(teleport){
+		teleport.update();
 	});
 
 	powerUps.forEach(function(powerUp) {
@@ -155,7 +163,7 @@ function update(){
 
 
 	//delete references to offscreen objects
-	[powerUps,lasers,obstacles, midBackgrounds, farBackgrounds].forEach(function(list){  
+	[powerUps,lasers,obstacles, midBackgrounds, farBackgrounds, teleports].forEach(function(list){  
 		for (i = 0; i < list.length; ++i) {
 		    if (list[i].cleanup()) {
 		        list.splice(i--, 1);
@@ -176,6 +184,9 @@ function render(){
 
 	obstacles.forEach(function(obstacle) {
 	    obstacle.draw();
+	});
+	teleports.forEach(function(teleport){
+		teleport.draw();
 	});
 	powerUps.forEach(function(powerUp) {
 	    powerUp.draw();
@@ -238,6 +249,6 @@ farBackgroundContext.font = "bold 50px monaco";
 farBackgroundContext.fillStyle = "black";
 farBackgroundContext.fillText("loading",width/2-100,height/2);
 
-loadImages(["images/sprite100px.png","images/bkgd_strip1.png","images/floatcity500px.png","images/monster_150px.png","images/monster_200px.png","images/monster1_200px.png","images/monster1_125px.png","images/sprintmoving.png","images/sprintmoving10d.png","images/loot_100px.png","images/bkgd_strip2.png","images/bkgd_strip3.png","images/sprite50px.png","images/loot_50px.png"]);
+loadImages(["images/sprite100px.png","images/bkgd_strip1.png","images/floatcity500px.png","images/monster_150px.png","images/monster_200px.png","images/monster1_200px.png","images/monster1_125px.png","images/sprintmoving.png","images/sprintmoving10d.png","images/loot_100px.png","images/bkgd_strip2.png","images/bkgd_strip3.png","images/sprite50px.png","images/loot_50px.png","images/shoot_50px.png","images/port_50px.png"]);
 
 checkImages();

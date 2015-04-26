@@ -1,5 +1,6 @@
 
 function Player() {
+	this.flappy_bird_mode = false;
 	this.image = images[0];
 	this.moving_up_image = images[7];
 	this.moving_right_image = images[8];
@@ -48,10 +49,15 @@ function Player() {
 			this.powered_up = false;
 			this.powered_up_time = 0;
 		}
-		if(keys[key.up]||keys[key.w]) {this.y-=this.speed;}
-		if(keys[key.down]||keys[key.s]) {this.y+=this.speed;}
-		if(keys[key.left]||keys[key.a]) {this.x-=this.speed;}
-		if(keys[key.right]||keys[key.d]) {this.x+=this.speed;}
+		if(this.flappy_bird_mode){
+			if(keys[key.up]||keys[key.w]) {this.y-=this.speed;}
+			else{this.y+=this.speed+1}
+		}else{
+			if(keys[key.up]||keys[key.w]) {this.y-=this.speed;}
+			if(keys[key.down]||keys[key.s]) {this.y+=this.speed;}
+			if(keys[key.left]||keys[key.a]) {this.x-=this.speed;}
+			if(keys[key.right]||keys[key.d]) {this.x+=this.speed;}
+		}
 		if(this.x < 0) this.x = 0;
 		if(this.y < 0) this.y = 0;
 		if(this.x > width-this.width) this.x = width-this.width;

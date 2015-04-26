@@ -5,7 +5,7 @@ function FarBackground() {
 	this.width = this.image.width;
 	this.x = 0;
 	this.y = 0;
-	this.speed = 0.1;
+	this.speed = 0.2;
 	this.cleanup = function(){
 		return this.x< 0-this.width
 	};
